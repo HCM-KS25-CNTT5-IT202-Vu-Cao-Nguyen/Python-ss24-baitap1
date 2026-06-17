@@ -1,0 +1,161 @@
+Câu 1. Việc gán trực tiếp
+order_table1.total_amount = 0
+
+đang vi phạm tính chất cốt lõi nào?
+
+Trả lời:
+
+Vi phạm tính Đóng gói (Encapsulation) của lập trình hướng đối tượng (OOP).
+
+Giải thích:
+
+total_amount đang là thuộc tính public.
+Bất kỳ đoạn code nào bên ngoài class đều có thể đọc hoặc ghi trực tiếp giá trị này.
+Điều này làm mất khả năng kiểm soát dữ liệu của đối tượng và gây ra lỗ hổng bảo mật.
+
+Ví dụ:
+
+order.total_amount = 0
+order.total_amount = -100000
+order.total_amount = 999999999
+
+Đều hợp lệ mặc dù hoàn toàn sai nghiệp vụ.
+
+Câu 2. Để ngăn chặn việc truy cập tự do, cần đổi tên thành gì?
+
+Trả lời:
+
+Đổi thành
+
+self.__total_amount
+
+Giải thích
+
+Hai dấu gạch dưới (__) sẽ kích hoạt cơ chế Name Mangling của Python.
+
+Ví dụ:
+
+self.__total_amount = 0
+
+Python sẽ tự đổi thành
+
+self._CoffeeOrder__total_amount
+
+Do đó câu lệnh
+
+order.__total_amount
+
+sẽ sinh lỗi
+
+AttributeError
+
+Điều này giúp hạn chế việc truy cập trực tiếp từ bên ngoài.
+
+Câu 3. Muốn chỉ cho phép đọc tổng tiền thì dùng Decorator nào?
+
+Trả lời:
+
+Dùng
+
+@property
+
+Ví dụ
+
+@property
+def total_amount(self):
+    return self.__total_amount
+
+Khi đó
+
+print(order.total_amount)
+
+vẫn hoạt động.
+
+Nhưng
+
+order.total_amount = 100000
+
+sẽ báo lỗi
+
+AttributeError:
+can't set attribute
+
+Đây chính là thuộc tính Read Only Property.
+
+Câu 4. Dòng lệnh
+self.vat_rate = new_rate
+
+thực chất Python đang làm gì?
+
+Trả lời
+
+Python không thay đổi Class Attribute.
+
+Thay vào đó Python tạo ra một Instance Attribute mới tên là vat_rate cho đúng đối tượng hiện tại.
+
+Ví dụ ban đầu
+
+CoffeeOrder.vat_rate
+0.1
+
+Có hai đối tượng
+
+order1
+order2
+
+đều dùng
+
+CoffeeOrder.vat_rate
+
+Sau khi chạy
+
+order1.update_vat_rate(0.08)
+
+Python thực hiện tương đương
+
+order1.vat_rate = 0.08
+
+Kết quả
+
+order1
+    vat_rate = 0.08     (Instance Attribute)
+
+CoffeeOrder
+    vat_rate = 0.10     (Class Attribute)
+
+order2
+    vẫn dùng CoffeeOrder.vat_rate = 0.10
+
+Do đó chỉ một bàn đổi VAT còn các bàn khác vẫn giữ mức cũ.
+
+Câu 5. Muốn cập nhật VAT cho toàn bộ hệ thống thì dùng gì?
+
+Trả lời
+
+Phải dùng
+
+@classmethod
+
+và thay
+
+self
+
+bằng
+
+cls
+
+Ví dụ
+
+@classmethod
+def update_vat_rate(cls, new_rate):
+    cls.vat_rate = new_rate
+
+Lúc này
+
+CoffeeOrder.update_vat_rate(0.08)
+
+sẽ thay đổi
+
+CoffeeOrder.vat_rate
+
+Tất cả các đối tượng đều dùng chung giá trị này.
